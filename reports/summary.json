@@ -1,0 +1,35 @@
+{
+  "source": "C:\\Users\\OMABOU\\OneDrive - Ashesi University\\Pictures\\Screenshots\\Documents\\GitHub\\Predict-Public-Transport-Delays-Using-Weather-Events\\data\\public_transport_delays.csv",
+  "rows_after_cleaning": 2000,
+  "target": "actual_arrival_delay_min",
+  "best_model": "Linear Regression (Ridge)",
+  "test_metrics": {
+    "cv_MAE": 7.9772,
+    "cv_MAE_std": 0.1471,
+    "cv_R2": -0.014,
+    "test_MAE": 8.205,
+    "test_RMSE": 9.5136,
+    "test_R2": -0.0158
+  },
+  "event_tests": {
+    "welch_t": -1.1968154010163792,
+    "welch_p": 0.2315361187278075,
+    "chi2": 0.00010547501838516603,
+    "chi2_p": 0.9918057873191527,
+    "delay_prob_event": 0.7787182587666264,
+    "delay_prob_no_event": 0.7774936061381074,
+    "relative_risk": 1.0015751288741808
+  },
+  "top_features": [
+    "dow_sin",
+    "temperature_c",
+    "holiday",
+    "wind_speed_kmh",
+    "hour",
+    "temp_deviation",
+    "hour_cos",
+    "is_hot",
+    "log_precipitation",
+    "is_freezing"
+  ]
+}
