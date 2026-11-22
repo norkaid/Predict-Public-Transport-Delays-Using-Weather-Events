@@ -98,6 +98,7 @@ def time_effect(df, target=C.TARGET, threshold=C.DELAY_THRESHOLD_MIN):
 def correlations(df, target=C.TARGET) -> pd.Series:
     """Spearman correlation of every numeric column with the target."""
     num = df.select_dtypes("number").drop(columns=[c for c in C.LEAKY_COLS if c in df])
+    num = num.loc[:, num.nunique() > 1]  # constant columns have no defined correlation
     return num.corrwith(df[target], method="spearman").drop(target, errors="ignore") \
               .dropna().sort_values(key=np.abs, ascending=False)
 
@@ -158,7 +159,12 @@ def make_figures(df: pd.DataFrame, out_dir: Path, target=C.TARGET,
 
     # 1. Delay distribution
     fig, ax = plt.subplots(figsize=(8, 4))
-    ax.hist(df[target], bins=50, color=BLUE, edgecolor=SURFACE, linewidth=0.5)
+    y = df[target].dropna()
+    if np.allclose(y, y.round()) and y.max() - y.min() <= 200:
+        bins = np.arange(y.min() - 0.5, y.max() + 1.5)  # one bar per whole minute
+    else:
+        bins = 50
+    ax.hist(y, bins=bins, color=BLUE, edgecolor=SURFACE, linewidth=0.5)
     ax.axvline(threshold, color=INK_2, linestyle="--", linewidth=1)
     ax.text(threshold, ax.get_ylim()[1] * 0.95, f"  {threshold:g}-min delay threshold",
             color=INK_2, fontsize=9, va="top")

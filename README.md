@@ -28,6 +28,43 @@ Dataset: [Public Transport Delays with Weather and Events (Kaggle)](https://www.
 - **"Delay probability"** = share of trips arriving ≥ 5 minutes late
   (`DELAY_THRESHOLD_MIN` in `config.py`).
 
+## Results on the Kaggle dataset
+
+Run on all 2,000 trips (none dropped in cleaning). Full tables and significance
+tests are in [`reports/REPORT.md`](reports/REPORT.md), charts in
+[`reports/figures/`](reports/figures/).
+
+**Weather, events and time of day do not explain arrival delays in this dataset.**
+
+| Question | What the data shows |
+|---|---|
+| Does bad weather increase delays? | No. Mean delay is 12.9–13.6 min for every condition (Rain 13.6, Snow 13.5, Clear 13.5, Storm 13.3, Cloudy 13.1, Fog 12.9). Share of trips ≥ 5 min late is 75–80 % throughout; clear weather is actually the highest (80 %). |
+| Do extreme temperatures matter? | No. Mean delay is 12.6–14.0 min in every temperature band from ≤ 0 °C to > 30 °C, with no U-shape. |
+| Does rain or snow volume matter? | No. Mean delay ranges from 13.0 to 13.7 min between no precipitation and heavy precipitation (> 10 mm), with no upward trend. |
+| Do city events increase delay probability? | Not meaningfully. 78 % of trips without an event are delayed ≥ 5 min, versus 75–81 % across event types (Protest 81 %, Parade 81 %, Festival 78 %, Sports 77 %, Concert 75 %). See the chi-square test in the report. |
+| Is there a rush-hour pattern? | No consistent one. Hourly mean delay fluctuates between roughly 9 and 16 min, with no morning or evening peak. |
+
+**Models (trained on the earliest 80 % of trips, tested on the latest 20 %):**
+
+| Model | Test MAE (min) | Test RMSE (min) | Test R² |
+|---|---|---|---|
+| Baseline: always predict the mean | **8.15** | **9.46** | −0.004 |
+| Linear Regression (Ridge) | 8.21 | 9.51 | −0.016 |
+| Random Forest | 8.28 | 9.59 | −0.032 |
+| XGBoost | 8.56 | 9.91 | −0.101 |
+
+No model beats the baseline. The more flexible the model, the worse it does
+(XGBoost is last), which is what happens when a model fits noise instead of
+signal.
+
+**Interpretation.** Arrival delays are spread almost evenly between about −3 and
+29 minutes (see `01_delay_distribution.png`) and are unrelated to every
+recorded factor. This is what randomly generated data looks like, and the
+dataset is most likely synthetic. The pipeline itself is not the cause: on
+generated data with real weather and event effects built in (`--synthetic`),
+the same code reaches R² ≈ 0.8 and recovers those effects. The approach would
+work on real operational data, where weather and events do affect delays.
+
 ## Setup
 
 ```bash

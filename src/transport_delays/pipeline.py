@@ -27,6 +27,17 @@ def _md_table(df: pd.DataFrame, floatfmt: str = ".3f") -> str:
     return "\n".join(lines)
 
 
+def _no_signal_note(metrics: pd.DataFrame, best: str) -> list[str]:
+    """Flag the case where no model beats always predicting the mean delay."""
+    base = metrics.loc["Baseline (mean)", "test_MAE"]
+    if metrics.loc[best, "test_MAE"] < base:
+        return []
+    return ["> **No model beats the mean baseline on the test period.** The "
+            "features carry little or no information about arrival delay in "
+            "this data, so the predictions are no better than guessing the "
+            "average delay.\n"]
+
+
 def run(raw: pd.DataFrame, report_dir: Path = C.DEFAULT_REPORT_DIR,
         model_dir: Path = C.DEFAULT_MODEL_DIR, source: str = "",
         target: str = C.TARGET, test_size: float = 0.2) -> dict:
@@ -98,6 +109,7 @@ def run(raw: pd.DataFrame, report_dir: Path = C.DEFAULT_REPORT_DIR,
            "period; the best model is chosen on `cv_MAE`.\n",
            _md_table(result.metrics), "",
            f"**Best model: {result.best_name}**\n",
+           *(_no_signal_note(result.metrics, result.best_name)),
            "## Top features (permutation importance on the test set)\n",
            _md_table(result.feature_importance.head(15).set_index("feature"), ".4f"), "",
            "## Figures\n"]

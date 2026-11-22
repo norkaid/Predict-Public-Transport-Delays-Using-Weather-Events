@@ -95,3 +95,11 @@ def test_full_run_writes_outputs(raw, tmp_path):
     assert (tmp_path / "m" / "best_model.joblib").exists()
     assert len(list((tmp_path / "r" / "figures").glob("*.png"))) >= 8
     assert summary["rows_after_cleaning"] == len(raw) - 1
+
+
+def test_no_signal_note():
+    from transport_delays.pipeline import _no_signal_note
+    m = pd.DataFrame({"test_MAE": [8.15, 8.21]}, index=["Baseline (mean)", "Ridge"])
+    assert _no_signal_note(m, "Ridge")
+    m.loc["Ridge", "test_MAE"] = 5.0
+    assert _no_signal_note(m, "Ridge") == []
