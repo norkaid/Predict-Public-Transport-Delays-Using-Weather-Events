@@ -57,6 +57,18 @@ No model beats the baseline. The more flexible the model, the worse it does
 (XGBoost is last), which is what happens when a model fits noise instead of
 signal.
 
+The other charts say the same thing:
+
+- **Correlations** (`06_correlations.png`): no feature has a Spearman
+  correlation with arrival delay above |ρ| = 0.05. The strongest is event
+  attendance at ρ ≈ 0.05, which explains well under 1 % of the variation.
+- **Feature importance** (`08_feature_importance.png`): shuffling any single
+  feature raises the best model's error by at most 0.03 minutes, against a
+  typical error of 8 minutes.
+- **Predicted vs actual** (`09_predicted_vs_actual.png`): the model predicts
+  roughly 11–15 minutes for every trip, whether the trip was 3 minutes early or
+  29 minutes late. It has learnt nothing beyond the average.
+
 **Interpretation.** Arrival delays are spread almost evenly between about −3 and
 29 minutes (see `01_delay_distribution.png`) and are unrelated to every
 recorded factor. This is what randomly generated data looks like, and the
